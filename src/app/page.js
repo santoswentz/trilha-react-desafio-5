@@ -1,27 +1,52 @@
-import Link from 'next/link';
-import { getPosts } from '../utils/mdx-utils';
-import { getGlobalData } from '../utils/global-data';
+export const dynamic = "force-dynamic"; // 🔥 impede erro no build (SSR forçado)
 
-import Footer from '../components/Footer';
-import Header from '../components/Header';
-import Layout, { GradientBackground } from '../components/Layout';
-import ArrowIcon from '../components/ArrowIcon';
-import SEO from '../components/SEO';
+import Link from "next/link";
+import { getPosts } from "../utils/mdx-utils";
+import { getGlobalData } from "../utils/global-data";
+
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import Layout, { GradientBackground } from "../components/Layout";
+import ArrowIcon from "../components/ArrowIcon";
+import SEO from "../components/SEO";
 
 export default async function IndexPage() {
-  const posts = await getPosts();
-  const globalData = getGlobalData();
+  let posts = [];
+  let globalData = {};
+
+  try {
+    // 🔥 Evita crash se API externa (ex: Supabase) falhar no build
+    posts = await getPosts();
+  } catch (error) {
+    console.error("Erro ao buscar posts:", error);
+    posts = [];
+  }
+
+  try {
+    globalData = getGlobalData();
+  } catch (error) {
+    console.error("Erro ao buscar globalData:", error);
+    globalData = {
+      name: "Wentz Blog",
+      blogTitle: "Meu Blog",
+      footerText: "© 2025 - Todos os direitos reservados",
+    };
+  }
 
   return (
     <Layout>
       <SEO title={globalData.name} description={globalData.blogTitle} />
       <Header name={globalData.name} />
+
       <main className="w-full">
         <h1 className="text-3xl lg:text-5xl text-center mb-12">
           {globalData.blogTitle}
         </h1>
 
         <ul className="w-full">
+          {posts.length === 0 && (
+            <p className="text-center opacity-60">Nenhum post encontrado.</p>
+          )}
           {posts.map((post) => (
             <li
               key={post.id}
@@ -38,7 +63,9 @@ export default async function IndexPage() {
                 )}
                 <h2 className="text-2xl md:text-3xl">{post.title}</h2>
                 {post.description && (
-                  <p className="mt-3 text-lg opacity-60">{post.description}</p>
+                  <p className="mt-3 text-lg opacity-60">
+                    {post.description}
+                  </p>
                 )}
                 <ArrowIcon className="mt-4" />
               </Link>

@@ -1,26 +1,33 @@
-import { api } from '../services/api'
+import { api } from "../services/api";
 
 export const getPosts = async () => {
-    const {data} = await api.get('/posts'); 
+  try {
+    const { data } = await api.get("/posts?select=*");
 
-    if(data){
-        return data;
+    if (Array.isArray(data) && data.length > 0) {
+      return data;
     }
 
-    return []
-}
+    return [];
+  } catch (error) {
+    console.error("❌ Erro ao buscar posts:", error.message || error);
+    // evita quebrar o build/prerender
+    return [];
+  }
+};
 
 export const getPostBySlug = async (id) => {
+  try {
+    // ✅ endpoint correto para filtrar um post específico
+    const { data } = await api.get(`/posts?select=*&id=eq.${id}`);
 
-    //TODO: BUSCAR UM POST EM ESPECIFICO.
-    const {data} = await api.get(`/post?id=eq.${id}`)
-    if(data && data.length > 0){
-        return data[0];
+    if (Array.isArray(data) && data.length > 0) {
+      return data[0];
     }
 
-    //faça tudo baseado no id
-
-    
-
-    return {}
-}
+    return null;
+  } catch (error) {
+    console.error(`❌ Erro ao buscar post com id=${id}:`, error.message || error);
+    return null;
+  }
+};

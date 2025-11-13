@@ -1,3 +1,6 @@
+'use client';
+
+
 export default function ArrowIcon({ className, color = 'text-primary' }) {
   return (
     <svg
