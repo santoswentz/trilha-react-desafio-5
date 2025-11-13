@@ -24,8 +24,8 @@ export const getPostBySlug = async (id) => {
 
   try {
     const { data } = await api.get(`/posts?select=*&id=eq.${id}`); // ele provavelmente está com a route errada
-    console.log("🧩 Dados recebidos do API para id=", id, ":", data); //retirar aqui e volta a funcionar
     if (Array.isArray(data) && data.length > 0) {
+    console.log("🧩 dados da api getPostBySlug vieram zerados no data"); //retirar aqui e volta a funcionar
       return data[0];
     }
     return null;
