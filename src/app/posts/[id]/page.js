@@ -9,11 +9,17 @@ import Footer from "../../../components/Footer";
 import SEO from "../../../components/SEO";
 
 export default async function PostPage({ params }) {
-  const id = params?.id; // ← usa optional chaining
+  
+  const resolvedParams = await params; // 👈 aguarda resolver 
+  console.log("🧩 params resolvidos:", resolvedParams);
+  const idresolvedParams = resolvedParams.Promise.id ; // 👈 aguarda resolver
+  console.log("🧩 id dos params resolvidos:", idresolvedParams);
+  const { id } = resolvedParams?.Promise?.id || {};
+  console.log("=========================================================================")
+  console.log("🧩 id extraído dos params:", id);
 
   if (!id) {
-    console.error("❌ Nenhum ID foi recebido nos parâmetros da rota.");
-    return <h1>Post não encontrado (sem ID)</h1>;
+    return <h1>❌ Nenhum ID encontrado na rota.</h1>;
   }
 
   let post = null;
@@ -34,14 +40,7 @@ export default async function PostPage({ params }) {
       footerText: "© 2025 - Todos os direitos reservados",
     };
   }
-
-  if (!post) {
-    return (
-      <Layout>
-        <h1 className="text-center text-2xl mt-12">Post não encontrado 😢</h1>
-      </Layout>
-    );
-  }
+ 
 
   return (
     <Layout>
